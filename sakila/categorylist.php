@@ -14,9 +14,40 @@ if($cmd = filter_input(INPUT_POST, 'cmd')){
 	if($cmd == 'add_category'){
 		// code to add a new category
 		
+		$cnam = filter_input(INPUT_POST, 'categoryname')
+			or die('Missing/illegal categroyname parameter');
+		
+		require_once('dbcon.php');
+		$sql = 'INSERT INTO category (name) VALUES (?)';
+		$stmt = $link->prepare($sql);
+		$stmt->bind_param('s', $cnam);
+		$stmt->execute();
+		
+		if($stmt->affected_rows > 0){
+			echo 'Category "'.$cnam.'" added';
+		}
+		else{
+			echo 'Could not add the category';
+		}		
 	}
 	elseif($cmd == 'delete_category'){
 		// code to delete the category
+		
+		$cid = filter_input(INPUT_POST, 'categoryid', FILTER_VALIDATE_INT)
+			or die('Missing/illegal categoryid parameter');
+		
+		require_once('dbcon.php');
+		$sql = 'DELETE FROM category WHERE category_id=?';
+		$stmt = $link->prepare($sql);
+		$stmt->bind_param('i', $cid);
+		$stmt->execute();
+		
+		if($stmt->affected_rows > 0){
+			echo 'Category "'.$cid.'" deleted';
+		}
+		else{
+			echo 'Could not delete category '.$cid;
+		}			
 		
 	}
 	else {
@@ -38,7 +69,13 @@ if($cmd = filter_input(INPUT_POST, 'cmd')){
 		$stmt->bind_result($cid, $nam);
 		while($stmt->fetch()){ ?>
 		
-		<li><a href="filmlist.php?categoryid=<?=$cid?>"><?=$nam?></a></li>
+		<li>
+			<a href="filmlist.php?categoryid=<?=$cid?>"><?=$nam?></a>
+			<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post">
+				<input type="hidden" name="categoryid" value="<?=$cid?>" />
+				<button type="submit" name="cmd" value="delete_category">Delete</button>
+			</form>
+		</li>
 
 <?php	} ?>
 	</ul>
