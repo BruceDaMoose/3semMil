@@ -75,6 +75,7 @@ if($cmd = filter_input(INPUT_POST, 'cmd')){
 				<input type="hidden" name="categoryid" value="<?=$cid?>" />
 				<button type="submit" name="cmd" value="delete_category">Delete</button>
 			</form>
+			<a href="renamecategory.php?categoryid=<?=$cid?>">Rename</a>
 		</li>
 
 <?php	} ?>
